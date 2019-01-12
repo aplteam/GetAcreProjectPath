@@ -1,0 +1,79 @@
+:Class  GetAcreProjectPath
+⍝ Returns the path used for all Acre projects from the registry.
+⍝ Kai Jaeger - APL Team Ltd
+⍝ Version 1.1.0 from 2019-01-12
+⍝ This user command is required by other projects like https://github.com/aplteam/Maker and others.
+⍝ It lives on https://github.com/aplteam/GetAcreProjectPath
+
+
+    :Field Public Shared ReadOnly RegKey←'HKCU\Software\APLTree\AplProjectPath'
+
+    ∇ r←List;⎕IO;⎕ML
+      :Access Shared Public
+      ⎕IO←⎕ML←1
+      r←⎕NS''
+      r.Name←'GetAcreProjectPath'
+      r.Desc←'Returns the path used for all Acre projects from the Windows Registry.'
+      r.Group←'acre'
+      r.Parse←''
+    ∇
+
+    ∇ value←Run(Cmd Args)
+      :Access Shared Public
+      ⎕IO←⎕ML←1
+      'This is a Windows-only User Command!'⎕SIGNAL 11/⍨'Windows'{⍺≢(⍴⍺)↑⍵}⊃# ⎕WG'APLVersion'
+      value←ReadRegKey RegKey
+      ('Not found in the Windows Registry: ',RegKey)⎕SIGNAL 6/⍨0=≢value
+    ∇
+
+    ∇ r←ReadRegKey key;wsh;⎕WX;sep;msg;path
+    ⍝ Read a registry key. Uses a particular default path which can be overidden _
+    ⍝ via the left argument
+      ⎕WX←1
+      r←⍬
+      'wsh'⎕WC'OLEClient' 'WScript.Shell'
+      :Trap 11
+          r←wsh.RegRead key
+      :Else
+          sep←⎕UCS 10
+          msg←'The registry key:',sep,'   ',RegKey,sep,'is undefined!',sep,sep,'Would you like to define it?'
+          :If 'Project Path'YesOrNo msg
+          :AndIf 0≠≢path←AskForPath''
+              path,←(~(¯1↑path)∊'\/')/'\'        ⍝ Enforce trailing \
+              wsh.RegWrite RegKey path
+              r←path
+          :EndIf
+      :EndTrap
+    ∇
+
+    ∇ r←Help Cmd;⎕IO;⎕ML
+      :Access Shared Public
+      ⎕IO←⎕ML←1
+      r←''
+      r,←⊂'This user command returns what is saved in the Windows Registry under the key:'
+      r,←⊂RegKey
+      r,←⊂'This is where all the APL projects are saved.'
+      r,←⊂'Note that this is a Windows-only User Command!'
+    ∇
+
+    ∇ bool←caption YesOrNo msg;p;res
+      p←⊂'MsgBox'
+      p,←⊂'Caption'caption
+      p,←⊂'Text'msg
+      p,←⊂'Style' 'Query'
+      p,←⊂'Event'('MsgBtn1' 'MsgBtn2')1
+      'msg'⎕WC p
+      res←⎕DQ msg
+      bool←'MsgBtn1'≡2⊃res
+    ∇
+
+    ∇ r←AskForPath caption;p;res
+      p←⊂'BrowseBox'
+      p,←⊂'HasEdit' 1
+      p,←⊂'caption'caption
+      'bb'⎕WC p
+      res←⎕DQ'bb'
+      r←bb.Target
+    ∇
+
+:EndClass
