@@ -1,12 +1,17 @@
 :Class  GetAcreProjectPath
 ⍝ Returns the path used for all Acre projects from the registry.
 ⍝ Kai Jaeger - APL Team Ltd
-⍝ Version 1.1.0 from 2019-01-12
+⍝ Version 1.1.1 from 2019-01-12
 ⍝ This user command is required by other projects like https://github.com/aplteam/Maker and others.
 ⍝ It lives on https://github.com/aplteam/GetAcreProjectPath
 
 
-    :Field Public Shared ReadOnly RegKey←'HKCU\Software\APLTree\AplProjectPath'
+    :Field Public Shared ReadOnly RegKey←'HKCU\Software\APLTree\AcreProjectPath'
+    
+    ∇r←Version
+    :Access Public Shared
+    r←'GetAcreProjectPath' '1.1.1.7' '2019-01-12'
+    ∇
 
     ∇ r←List;⎕IO;⎕ML
       :Access Shared Public
@@ -52,7 +57,7 @@
       r←''
       r,←⊂'This user command returns what is saved in the Windows Registry under the key:'
       r,←⊂RegKey
-      r,←⊂'This is where all the APL projects are saved.'
+      r,←⊂'This is where all the Acre projects are expected to be saved.'
       r,←⊂'Note that this is a Windows-only User Command!'
     ∇
 

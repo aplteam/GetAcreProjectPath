@@ -1,0 +1,10 @@
+ R←Test_001(stopFlag batchFlag);⎕TRAP
+⍝ Test the main functionality of the user command "GetAcreProject"
+ ⎕TRAP←(999 'C' '. ⍝ Deliberate error')(0 'N')
+ R←∆Failed
+
+ →PassesIf 0<≢##.GetAcreProjectPath.Run'' ''
+
+ R←∆OK
+
+⍝Done
